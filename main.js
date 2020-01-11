@@ -34,20 +34,40 @@ client.on('message', message => {
 				message.reply("La transaction a bien était effectué");
 			}
 		}
+		if (phr[1] === 'give') {	
+			if (message.member.hasPermission("ADMINISTRATOR")) {
+				const destinataire = phr[3].substring(3, phr[3].length - 1);
+				if (balance[message.author.id] === undefined) {
+					balance[message.author.id] = 0;
+				}
+				if (balance[destinataire] === undefined) {
+					balance[destinataire] = 0;
+				}
+				balance[destinataire] += parseInt(phr[2], 10);
+				message.reply("Le don a bien était fait");
+			} else {
+				message.reply("Vous n'avez pas la permission d'utiliser cette commande");
+			}
+		}	
 	}
 	if (phr[0] === '!give') {	
-		if (balance[message.author.id] === undefined) {
-			balance[message.author.id] = 0;
-		}
-		balance[message.author.id] += parseInt(phr[1], 10);
-		message.reply(balance[message.author.id]);
+		if (message.member.hasPermission("ADMINISTRATOR")) {
+			if (balance[message.author.id] === undefined) {
+				balance[message.author.id] = 0;
+			}
+			balance[message.author.id] += parseInt(phr[1], 10);
+			message.reply("Le don a bien était fait");
+		} else {
+			message.reply("Vous n'avez pas la permission d'utiliser cette commande");
+		}	 
 	}
 	if (phr[0] === '!help') {
 		message.author.send('Voici les commandes actuellement disponibles pour vous : \n\
 		!help : vous envoie toute la liste des commandes disponibles \n\
 monnaie : \n\
 		!balance mount : donne la somme que vous posseder en ce moment \n\
-		!balance pay [montant] [destinataire] : paye le destinataire du montant indiqué');
+		!balance pay [montant] [destinataire] : paye le destinataire du montant indiqué \n\
+		!balance give [montant] [destinataire] : donne le montant au destinataire');
 	}
 });
 
