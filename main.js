@@ -13,10 +13,11 @@ client.on('message', message => {
 	}
 	if (phr[0] === '!balance') {
 		if (phr[1] === 'mount') {
-			if (balance[message.author.id] === undefined) {
-				balance[message.author.id] = 0;
+			const destinataire = phr[2].substring(3, phr[2].length - 1);
+			if (balance[destinataire] === undefined) {
+				balance[destinataire] = 0;
 			}
-			message.reply(balance[message.author.id]);
+			message.reply(balance[destinataire]);
 		}
 		if (phr[1] === 'pay') {
 			const destinataire = phr[3].substring(3, phr[3].length - 1);
@@ -37,9 +38,6 @@ client.on('message', message => {
 		if (phr[1] === 'give') {	
 			if (message.member.hasPermission("ADMINISTRATOR")) {
 				const destinataire = phr[3].substring(3, phr[3].length - 1);
-				if (balance[message.author.id] === undefined) {
-					balance[message.author.id] = 0;
-				}
 				if (balance[destinataire] === undefined) {
 					balance[destinataire] = 0;
 				}
@@ -48,18 +46,23 @@ client.on('message', message => {
 			} else {
 				message.reply("Vous n'avez pas la permission d'utiliser cette commande");
 			}
-		}	
-	}
-	if (phr[0] === '!give') {	
-		if (message.member.hasPermission("ADMINISTRATOR")) {
-			if (balance[message.author.id] === undefined) {
-				balance[message.author.id] = 0;
+		}
+		if (phr[1] === 'remove') {
+			if (message.member.hasPermission("ADMINISTRATOR")) {
+				const destinataire = phr[3].substring(3, phr[3].length - 1);
+				if (balance[destinataire] === undefined) {
+					balance[destinataire] = 0;
+				}
+				if (balance[destinataire] >= phr[2]) {
+					balance[destinataire] -= parseInt(phr[2], 10);
+				} else {
+					balance[destinataire] = 0;
+				}
+				message.reply("le montant a bien était enlevé");
+			} else {
+				message.reply("Vous n'avez pas la permission de faire cette commande");
 			}
-			balance[message.author.id] += parseInt(phr[1], 10);
-			message.reply("Le don a bien était fait");
-		} else {
-			message.reply("Vous n'avez pas la permission d'utiliser cette commande");
-		}	 
+		}
 	}
 	if (phr[0] === '!help') {
 		message.author.send('Voici les commandes actuellement disponibles pour vous : \n\
@@ -67,7 +70,8 @@ client.on('message', message => {
 monnaie : \n\
 		!balance mount : donne la somme que vous posseder en ce moment \n\
 		!balance pay [montant] [destinataire] : paye le destinataire du montant indiqué \n\
-		!balance give [montant] [destinataire] : donne le montant au destinataire');
+		!balance give [montant] [destinataire] : (ADMINISTRATEUR SEULEMENT) ajoute le montant au destinataire\n\
+		!balance remove [montant] [destinataire] : (ADMINISTRATEUR SEULEMENT) retire le montant du destinataire');
 	}
 });
 
@@ -81,4 +85,4 @@ client.on('guildMemberRemove', user => {
 	channel.send(`Au revoir ${user} et a bientôt`);
 })
 
-client.login('NjY0OTM4MDY5MTk1MjI3MTU2.XhhDOg.F5QgaY5U4gWhRBgBUx6BatActLM');
+client.login('NjY0OTM4MDY5MTk1MjI3MTU2.XhpOPg.b0tmQFmygr3D50YXu3kgufrnfMY');
