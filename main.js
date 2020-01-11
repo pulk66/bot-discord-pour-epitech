@@ -13,19 +13,41 @@ client.on('message', message => {
 	}
 	if (phr[0] === '!balance') {
 		if (phr[1] === 'mount') {
-			const auteur = message.member.id;
-			console.log(auteur);
-			if (!balance.hasOwnProperty(auteur)) {
-				balance[auteur] = 0;
+			if (balance[message.author.id] === undefined) {
+				balance[message.author.id] = 0;
 			}
-			message.reply(balance[auteur]);
+			message.reply(balance[message.author.id]);
 		}
+		if (phr[1] === 'pay') {
+			const destinataire = phr[3].substring(3, phr[3].length - 1);
+			if (balance[destinataire] === undefined) {
+				balance[destinataire] = 0;
+			}
+			if (balance[message.author.id] === undefined) {
+				balance[message.author.id] = 0;
+			} 
+			if (balance[message.author.id] < parseInt(phr[2], 10)) {
+				message.reply("Vous n'avez pas assez d'argent sur votre compte");
+			} else {
+				balance[destinataire] += parseInt(phr[2], 10);
+				balance[message.author.id] -= parseInt(phr[2], 10);
+				message.reply("La transaction a bien était effectué");
+			}
+		}
+	}
+	if (phr[0] === '!give') {	
+		if (balance[message.author.id] === undefined) {
+			balance[message.author.id] = 0;
+		}
+		balance[message.author.id] += parseInt(phr[1], 10);
+		message.reply(balance[message.author.id]);
 	}
 	if (phr[0] === '!help') {
 		message.author.send('Voici les commandes actuellement disponibles pour vous : \n\
 		!help : vous envoie toute la liste des commandes disponibles \n\
 monnaie : \n\
-		!balance mount : donne la somme que vous posseder en ce moment');
+		!balance mount : donne la somme que vous posseder en ce moment \n\
+		!balance pay [montant] [destinataire] : paye le destinataire du montant indiqué');
 	}
 });
 
