@@ -1,6 +1,11 @@
+//RENTRER LE TOKEN DU BOT
+const TOKEN = "NjY0OTM4MDY5MTk1MjI3MTU2.XhsKbw.v-bjKDwc8ilBmXALKGxRa9ThQ4Q";
+
+const fs = require('fs');
 const Discord = require('discord.js');
 const client = new Discord.Client();
-var balance = {};
+let fichier = fs.readFileSync('argent.json');
+let balance = JSON.parse(fichier);
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
@@ -8,9 +13,6 @@ client.on('ready', () => {
 
 client.on('message', message => {
 	const phr = message.content.split(' ');
-	if (phr[0] === '!ping') {
-		message.reply('pong');
-	}
 	if (phr[0] === '!balance') {
 		if (phr[1] === 'mount') {
 			if (phr[2] === undefined) {
@@ -51,7 +53,6 @@ client.on('message', message => {
 		}
 		if (phr[1] === 'give') {	
 			if (message.member.hasPermission("ADMINISTRATOR")) {
-				console.log(phr[3][0]);
 				if (phr[3] === undefined) {
 					message.reply("Il manque le destinataire");
 				} else if (phr[3][0] != '<') {
@@ -63,12 +64,12 @@ client.on('message', message => {
 					if (balance[destinataire] === undefined) {
 						balance[destinataire] = 0;
 					}
-					balance[destinataire] += parseInt(phr[2], 10);
-					message.reply("Le don a bien était fait");					
 				}
 			} else {
 				message.reply("Vous n'avez pas la permission d'utiliser cette commande");
 			}
+			donnees = JSON.stringify(balance);
+			fs.writeFileSync('argent.json',donnees);				
 		}
 		if (phr[1] === 'remove') {
 			if (message.member.hasPermission("ADMINISTRATOR")) {
@@ -94,6 +95,17 @@ client.on('message', message => {
 				message.reply("Vous n'avez pas la permission de faire cette commande");
 			}
 		}
+		if (phr[1] === 'reset') {
+			if (phr[2] === 'Confirm') {
+				balance = {};
+				message.reply("Toute l'économie a bien était remise a 0, plus personne n'a d'argent");
+			} else {
+				message.reply("Etes vous sur de ça ? Si vous faites cette commande vous aller supprimer l'argent de tout les utilisateur de ce serveur.\n\
+			Pour confirmer tappez '!balance reset Confirm'");
+			}
+		}
+		donnees = JSON.stringify(balance);
+		fs.writeFileSync('argent.json',donnees);
 	}
 	if (phr[0] === '!help') {
 		message.author.send('Voici les commandes actuellement disponibles pour vous : \n\
@@ -116,4 +128,4 @@ client.on('guildMemberRemove', user => {
 	channel.send(`Au revoir ${user} et a bientôt`);
 })
 
-client.login('NjY0OTM4MDY5MTk1MjI3MTU2.Xhr98w.ZAYn-ae1jQT2m0koxB5FM8RpNh4');
+client.login(TOKEN);
