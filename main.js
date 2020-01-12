@@ -1,11 +1,17 @@
 //RENTRER LE TOKEN DU BOT
-const TOKEN = "NjY0OTM4MDY5MTk1MjI3MTU2.XhsKbw.v-bjKDwc8ilBmXALKGxRa9ThQ4Q";
+const TOKEN = "NjY0OTM4MDY5MTk1MjI3MTU2.XhsOyQ.AT9o9PKxTFGOUuIt2th_FD2bKAQ";
 
 const fs = require('fs');
 const Discord = require('discord.js');
 const client = new Discord.Client();
-let fichier = fs.readFileSync('argent.json');
-let balance = JSON.parse(fichier);
+let fichier_balance = fs.readFileSync('argent.json');
+let balance = JSON.parse(fichier_balance);
+let fichier_meme_a_valider = fs.readFileSync('meme_a_valider.json');
+let meme_a_valider = JSON.parse(fichier_meme_a_valider);
+let fichier_all_meme = fs.readFileSync('all_meme.json');
+let all_meme = JSON.parse(fichier_all_meme);
+let fichier_meme_categories = fs.readFileSync('meme_categories.json');
+let meme_categories = JSON.parse(fichier_meme_categories);
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
@@ -96,16 +102,23 @@ client.on('message', message => {
 			}
 		}
 		if (phr[1] === 'reset') {
-			if (phr[2] === 'Confirm') {
-				balance = {};
-				message.reply("Toute l'économie a bien était remise a 0, plus personne n'a d'argent");
+			if (message.member.hasPermission("ADMINISTRATOR")) {
+				if (phr[2] === 'Confirm') {
+					balance = {};
+					message.reply("Toute l'économie a bien était remise a 0, plus personne n'a d'argent");
+				} else {
+					message.reply("Etes vous sur de ça ? Si vous faites cette commande vous aller supprimer l'argent de tout les utilisateur de ce serveur.\n\
+				Pour confirmer tappez '!balance reset Confirm'");
+				}
 			} else {
-				message.reply("Etes vous sur de ça ? Si vous faites cette commande vous aller supprimer l'argent de tout les utilisateur de ce serveur.\n\
-			Pour confirmer tappez '!balance reset Confirm'");
+				message.reply("Vous n'avez pas la permission d'utiliser cette commande");
 			}
 		}
 		donnees = JSON.stringify(balance);
 		fs.writeFileSync('argent.json',donnees);
+	}
+	if (phr[0] === '!meme') {
+		
 	}
 	if (phr[0] === '!help') {
 		message.author.send('Voici les commandes actuellement disponibles pour vous : \n\
@@ -114,7 +127,8 @@ monnaie : \n\
 		!balance mount : donne la somme que vous posseder en ce moment \n\
 		!balance pay [montant] [destinataire] : paye le destinataire du montant indiqué \n\
 		!balance give [montant] [destinataire] : (ADMINISTRATEUR SEULEMENT) ajoute le montant au destinataire\n\
-		!balance remove [montant] [destinataire] : (ADMINISTRATEUR SEULEMENT) retire le montant du destinataire');
+		!balance remove [montant] [destinataire] : (ADMINISTRATEUR SEULEMENT) retire le montant du destinataire\n\
+		!balance reset : (ADMINISTRATEUR SEULEMENT) remet à 0 l\'argent de tout les utilisateur');
 	}
 });
 
