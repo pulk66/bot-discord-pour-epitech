@@ -1,15 +1,11 @@
 //RENTRER LE TOKEN DU BOT
-const TOKEN = "NjY0OTM4MDY5MTk1MjI3MTU2.XhsOyQ.AT9o9PKxTFGOUuIt2th_FD2bKAQ";
+const TOKEN = "NjY0OTM4MDY5MTk1MjI3MTU2.XhtkOg.WummTqHH43ws6pM4-vjbapLuBjg";
 
 const fs = require('fs');
 const Discord = require('discord.js');
 const client = new Discord.Client();
 let fichier_balance = fs.readFileSync('argent.json');
 let balance = JSON.parse(fichier_balance);
-let fichier_meme_a_valider = fs.readFileSync('meme_a_valider.json');
-let meme_a_valider = JSON.parse(fichier_meme_a_valider);
-let fichier_all_meme = fs.readFileSync('all_meme.json');
-let all_meme = JSON.parse(fichier_all_meme);
 let fichier_meme_categories = fs.readFileSync('meme_categories.json');
 let meme_categories = JSON.parse(fichier_meme_categories);
 
@@ -118,7 +114,53 @@ client.on('message', message => {
 		fs.writeFileSync('argent.json',donnees);
 	}
 	if (phr[0] === '!meme') {
-		
+		if (phr[1] === 'add') {
+			if (phr[2] === 'catégories') {
+				if (message.member.hasPermission("ADMINISTRATOR")) {
+					if (phr[3] === undefined) {
+						message.reply("le nom de la catégorie n'a pas était mentionnée");
+					} else {
+						meme_categories.push(phr[3]);
+						const donnees = JSON.stringify(meme_categories);
+						fs.writeFileSync('meme_categories.json', donnees);
+						const crochet = '[]';
+						const name = phr[3] + '.json';
+						fs.writeFileSync(name, crochet);
+						message.reply("La catégorie a bien était ajouter");
+					}
+				} else {
+					message.reply("Vous n'avez pas la permission de faire cette commande");
+				}
+			}
+		}
+		if (phr[1] === 'remove') {
+			if (phr[2] === 'catégories') {
+				if (message.member.hasPermission("ADMINISTRATOR")) {
+					if (phr[3] === undefined) {
+						message.reply("Le nom de la catégorie n'a pas était mentionnée");
+					} else {
+						const index = meme_categories.indexOf(phr[3]);
+						meme_categories.splice(index, 1);
+						if (index < 0) {
+							message.reply("la catégorie n'existe pas");
+						} else {
+							message.reply("la catégorie a bien était enlevé");
+						}
+					}
+				} else {
+					message.reply("Vous n'avez pas la permission de faire cette commande");
+				}
+			}
+		}
+		if (phr[1] === 'catégories') {
+			var txt = "";
+			for (element in meme_categories) {
+				txt += "- ";
+				txt += meme_categories[element];
+				txt += "\n";
+			}
+			message.reply(txt);
+		}
 	}
 	if (phr[0] === '!help') {
 		message.author.send('Voici les commandes actuellement disponibles pour vous : \n\
