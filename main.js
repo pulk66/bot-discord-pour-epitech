@@ -13,52 +13,83 @@ client.on('message', message => {
 	}
 	if (phr[0] === '!balance') {
 		if (phr[1] === 'mount') {
-			const destinataire = phr[2].substring(3, phr[2].length - 1);
-			if (balance[destinataire] === undefined) {
-				balance[destinataire] = 0;
+			if (phr[2] === undefined) {
+				message.reply("il manque le destinataire");
+			} else if (phr[2][0] != '<') {
+				message.reply("le destinataire n'est pas bien écrit");
+			} else {
+				const destinataire = phr[2].substring(3, phr[2].length - 1);
+				if (balance[destinataire] === undefined) {
+					balance[destinataire] = 0;
+				}
+				message.reply(balance[destinataire]);
 			}
-			message.reply(balance[destinataire]);
 		}
 		if (phr[1] === 'pay') {
-			const destinataire = phr[3].substring(3, phr[3].length - 1);
-			if (balance[destinataire] === undefined) {
-				balance[destinataire] = 0;
-			}
-			if (balance[message.author.id] === undefined) {
-				balance[message.author.id] = 0;
-			} 
-			if (balance[message.author.id] < parseInt(phr[2], 10)) {
-				message.reply("Vous n'avez pas assez d'argent sur votre compte");
+			if (phr[3] === undefined) {
+				message.reply("Il manque le destinataire");
+			} else if (phr[3][0] != '<') {
+				message.reply("le destinataire n'est pas bien écrit");
+			} else if (phr[2] != parseInt(phr[2], 10)) {
+				message.reply("le montant indiqué n'est pas valide");
 			} else {
-				balance[destinataire] += parseInt(phr[2], 10);
-				balance[message.author.id] -= parseInt(phr[2], 10);
-				message.reply("La transaction a bien était effectué");
-			}
-		}
-		if (phr[1] === 'give') {	
-			if (message.member.hasPermission("ADMINISTRATOR")) {
 				const destinataire = phr[3].substring(3, phr[3].length - 1);
 				if (balance[destinataire] === undefined) {
 					balance[destinataire] = 0;
 				}
-				balance[destinataire] += parseInt(phr[2], 10);
-				message.reply("Le don a bien était fait");
+				if (balance[message.author.id] === undefined) {
+					balance[message.author.id] = 0;
+				} 
+				if (balance[message.author.id] < parseInt(phr[2], 10)) {
+					message.reply("Vous n'avez pas assez d'argent sur votre compte");
+				} else {
+					balance[destinataire] += parseInt(phr[2], 10);
+					balance[message.author.id] -= parseInt(phr[2], 10);
+					message.reply("La transaction a bien était effectué");
+				}				
+			}
+		}
+		if (phr[1] === 'give') {	
+			if (message.member.hasPermission("ADMINISTRATOR")) {
+				console.log(phr[3][0]);
+				if (phr[3] === undefined) {
+					message.reply("Il manque le destinataire");
+				} else if (phr[3][0] != '<') {
+					message.reply("le destinataire n'est pas bien écrit");
+				} else if (phr[2] != parseInt(phr[2], 10)) {
+					message.reply("la valeur indiqué n'est pas bonne");
+				} else {
+					const destinataire = phr[3].substring(3, phr[3].length - 1);
+					if (balance[destinataire] === undefined) {
+						balance[destinataire] = 0;
+					}
+					balance[destinataire] += parseInt(phr[2], 10);
+					message.reply("Le don a bien était fait");					
+				}
 			} else {
 				message.reply("Vous n'avez pas la permission d'utiliser cette commande");
 			}
 		}
 		if (phr[1] === 'remove') {
 			if (message.member.hasPermission("ADMINISTRATOR")) {
-				const destinataire = phr[3].substring(3, phr[3].length - 1);
-				if (balance[destinataire] === undefined) {
-					balance[destinataire] = 0;
-				}
-				if (balance[destinataire] >= phr[2]) {
-					balance[destinataire] -= parseInt(phr[2], 10);
+				if (phr[3] === undefined) {
+					message.reply("Il manque le destinataire");
+				} else if (phr[3][0] != '<') {
+					message.reply("le destinataire n'est pas bien écrit");
+				} else if (phr[2] != parseInt(phr[2], 10)) {
+					message.reply("le montant indiqué n'est pas valide");
 				} else {
-					balance[destinataire] = 0;
+					const destinataire = phr[3].substring(3, phr[3].length - 1);
+					if (balance[destinataire] === undefined) {
+						balance[destinataire] = 0;
+					}
+					if (balance[destinataire] >= phr[2]) {
+						balance[destinataire] -= parseInt(phr[2], 10);
+					} else {
+						balance[destinataire] = 0;
+					}
+					message.reply("le montant a bien était enlevé");				
 				}
-				message.reply("le montant a bien était enlevé");
 			} else {
 				message.reply("Vous n'avez pas la permission de faire cette commande");
 			}
@@ -85,4 +116,4 @@ client.on('guildMemberRemove', user => {
 	channel.send(`Au revoir ${user} et a bientôt`);
 })
 
-client.login('NjY0OTM4MDY5MTk1MjI3MTU2.XhpOPg.b0tmQFmygr3D50YXu3kgufrnfMY');
+client.login('NjY0OTM4MDY5MTk1MjI3MTU2.Xhr98w.ZAYn-ae1jQT2m0koxB5FM8RpNh4');
