@@ -1,5 +1,5 @@
 //RENTRER LE TOKEN DU BOT
-const TOKEN = "NjY0OTM4MDY5MTk1MjI3MTU2.XhtkOg.WummTqHH43ws6pM4-vjbapLuBjg";
+const TOKEN = "NjY0OTM4MDY5MTk1MjI3MTU2.Xht_MQ.hpKoGKW4D8WNq4Vheho3KTgmEcY";
 
 const fs = require('fs');
 const Discord = require('discord.js');
@@ -8,6 +8,10 @@ let fichier_balance = fs.readFileSync('argent.json');
 let balance = JSON.parse(fichier_balance);
 let fichier_meme_categories = fs.readFileSync('meme_categories.json');
 let meme_categories = JSON.parse(fichier_meme_categories);
+let fichier_meme_a_valider = fs.readFileSync('meme_a_valider.json');
+let meme_a_valider = JSON.parse(fichier_meme_a_valider);
+let fichier_all_meme = fs.readFileSync('all_meme.json');
+let all_meme = JSON.parse(fichier_all_meme);
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
@@ -70,8 +74,7 @@ client.on('message', message => {
 			} else {
 				message.reply("Vous n'avez pas la permission d'utiliser cette commande");
 			}
-			donnees = JSON.stringify(balance);
-			fs.writeFileSync('argent.json',donnees);				
+			fs.writeFileSync('argent.json', JSON.stringify(balance));				
 		}
 		if (phr[1] === 'remove') {
 			if (message.member.hasPermission("ADMINISTRATOR")) {
@@ -110,8 +113,7 @@ client.on('message', message => {
 				message.reply("Vous n'avez pas la permission d'utiliser cette commande");
 			}
 		}
-		donnees = JSON.stringify(balance);
-		fs.writeFileSync('argent.json',donnees);
+		fs.writeFileSync('argent.json', JSON.stringify(balance));
 	}
 	if (phr[0] === '!meme') {
 		if (phr[1] === 'add') {
@@ -121,15 +123,25 @@ client.on('message', message => {
 						message.reply("le nom de la catégorie n'a pas était mentionnée");
 					} else {
 						meme_categories.push(phr[3]);
-						const donnees = JSON.stringify(meme_categories);
-						fs.writeFileSync('meme_categories.json', donnees);
-						const crochet = '[]';
-						const name = phr[3] + '.json';
-						fs.writeFileSync(name, crochet);
+						fs.writeFileSync('meme_categories.json', JSON.stringify(meme_categories));
+						fs.writeFileSync(phr[3] + '.json', '[]');
 						message.reply("La catégorie a bien était ajouter");
 					}
 				} else {
 					message.reply("Vous n'avez pas la permission de faire cette commande");
+				}
+			}
+			if (phr[2] === 'meme') {
+				if (phr[4] === undefined) {
+					message.reply("le nom ou l'url n'a pas était mentionnée");
+				} else {
+					if (all_meme[phr[3]] === undefined && meme_a_valider[phr[3]] === undefined) {
+						meme_a_valider[phr[3]] = phr[4];
+						fs.writeFileSync('meme_a_valider.json', JSON.stringify(meme_a_valider));
+						message.reply("la proposition a bien était faites");
+					} else {
+						message.reply("le nom proposé est déja pris");
+					}
 				}
 			}
 		}
@@ -146,6 +158,7 @@ client.on('message', message => {
 						} else {
 							message.reply("la catégorie a bien était enlevé");
 						}
+						fs.writeFileSync('meme_categories.json', JSON.stringify(meme_a_valider));
 					}
 				} else {
 					message.reply("Vous n'avez pas la permission de faire cette commande");
