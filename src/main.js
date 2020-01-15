@@ -1,9 +1,10 @@
 //RENTRER LE TOKEN DU BOT
-const TOKEN = "NjY0OTM4MDY5MTk1MjI3MTU2.Xh12ww.-0vvTmcoFNgJydavT18RrbVkw4c";
+const TOKEN = "NjY0OTM4MDY5MTk1MjI3MTU2.Xh7KJw.OF2qQYMx6fPPtoJcDyUuuyAVcp4";
 
 const fs = require('fs');
 const Discord = require('discord.js');
 const client = new Discord.Client();
+const ffmpeg = require('ffmpeg')
 let fichier_balance = fs.readFileSync('../file/money/argent.json');
 let balance = JSON.parse(fichier_balance);
 let fichier_meme_categories = fs.readFileSync('../file/meme/meme_categories.json');
@@ -14,6 +15,8 @@ let fichier_all_meme = fs.readFileSync('../file/meme/all_meme.json');
 let all_meme = JSON.parse(fichier_all_meme);
 let fichier_invite = fs.readFileSync('../file/game/invite.json');
 let invite = JSON.parse(fichier_invite);
+let fichier_current_game = fs.readFileSync('../file/game/current_game.json');
+let current_game = JSON.parse(fichier_current_game);
 
 function getRandomInt(max) {
 	return Math.floor(Math.random() * Math.floor(max));
@@ -25,6 +28,16 @@ client.on('ready', () => {
 
 client.on('message', message => {
 	const phr = message.content.split(' ');
+	if (phr[0] === '!song') {
+		if (message.member.voiceChannelID === undefined) {
+			message.reply("connecter vous sur un vocal");
+			console.log(message.member);
+		} else {
+			let connection = message.member.voiceChannel.join();
+			//console.log(message.member.voiceChannel);
+			//console.log(message.member.voiceChannelID);
+		}
+	}
 	if (phr[0] === '!balance') {
 		if (phr[1] === 'mount') {
 			if (phr[2] === undefined) {
@@ -288,10 +301,31 @@ client.on('message', message => {
 					message.reply("le pseudo de l'invitation n'a pas était mentionnée");
 				} else {
 					for (element in invite) {
-						if (invite[element][0] === phr[3] || invite[element][1] === message.member.id) {
-							message.channel.send(`${phr[3]}, a accepter l'invitation de <@${message.member.id}>`);
-							delete invite[element];
-							fs.writeFileSync("../file/game/invite.json", fichier_invite);
+						let envoyeur = phr[3].substring(3, phr[3].length - 1);
+						if (invite[element][0] === envoyeur && invite[element][1] === message.member.id) {
+							let i = 0;
+							while (!(current_game[i] === undefined)) {
+								i++;
+							}
+							message.channel.send(`<@${invite[element][0]}> a accepter l'invitation de <@${invite[element][1]}>`);
+							current_game[i] = [invite[element][0], invite[element][1], invite[element][2]];
+							fs.writeFileSync('../file/game/current_game.json', JSON.stringify(current_game));
+							invite.splice(invite.indexOf(element), 1);
+							fs.writeFileSync('../file/game/invite.json', JSON.stringify(invite));
+						}
+					}
+				}
+			}
+			if (phr[2] === 'refuse') {
+				if (phr[3] === undefined) {
+					message.reply("Le pseudo de l'invitation n'a pas était mentionnée");
+				} else {
+					for (element in invite) {
+						let envoyeur = phr[3].substring(3, phr[3].length - 1);
+						if (invite[element][0] === envoyeur && invite[element][1] === message.member.id) {
+							invite.splice(invite.indexOf(element), 1);
+							fs.writeFileSync('../file/game/invite.json', JSON.stringify(invite));
+							message.channel.send(`<@${message.member.id}> a refuser l'invitation de ${phr[3]}`);
 						}
 					}
 				}
@@ -306,9 +340,11 @@ client.on('message', message => {
 					let player2 = phr[3].substring(3, phr[3].length - 1);
 					let i = 0;
 					let possibility = true;
-					while (!(invite[i] === undefined) && possibility === true) {
-						if (invite[i] = [player1, player2, "morpion"]) {
-							possibility = false;
+					while (!(invite[i] === undefined)) {
+						if (!(invite[i] === undefined)) {
+							if (invite[i][0] === player1 && invite[i][1] === player2 && invite[i][2] === "morpion") {
+								possibility = false;
+							}
 						}
 						i++;
 					}
